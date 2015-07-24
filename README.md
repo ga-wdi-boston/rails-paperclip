@@ -6,7 +6,7 @@
 
 By the end of this lesson, students should be able to:
 
-- Use Paperclip to implemenet image upload on localhost.
+- Use Paperclip to implement image upload on localhost.
 - Integrate Paperclip with S3.
 
 ## Prerequisites
@@ -17,7 +17,7 @@ By the end of this lesson, students should be able to:
 
 ## Paperclip
 
-Paperclip is a gem that was created by a development shop called _**thoughtbot**_; it's a tool to simplify the process of integrating image upload (a common feature for web applications) into Rails. Although Paperclip can be used in conjunction with 3rd party storage systems like Amazon S3, it can also be used simply to upload images to an app on localhost.
+Paperclip is a gem that was created by a dev shop called [**thoughtbot**](https://thoughtbot.com/); it's a tool to simplify the process of integrating image upload (a common feature for web applications) into Rails. Although Paperclip can be used in conjunction with 3rd party storage systems like Amazon S3, it can also be used simply to upload images to an app on localhost.
 
 Together, we're going to walk through the steps of how you take an ordinary Rails application and incorporate image upload. Afterwards, if there's time, we'll look at how to integrate S3 as well.
 
@@ -149,7 +149,7 @@ Ready to take the leap? Let's do it!
   Assuming you've set up your `.env` file correctly, and have installed the `dotenv-rails` gem, these references should point to the variables in `.env`, _even as they remain invisible to Git_.
 
   > "But wait! If Git can't see our important secrets, how will they transfer over when we deploy?"
-  Great question. The precise way of handling secret information across platforms depends on how you've decided to manage secret information within your app; assuming we stick with the system we've been using, the way that we'd share secret information with a hosting service like Heroku is by establishing a secure, private line of communication between us and the host, and transferring the secrets through that protected channel. We'll look at this more next week when we start deploying to Heroku.
+  Great question. The precise approach we use for handling secret information across platforms depends on how secret information is managed within your app; assuming we stick with the system we've been using, the way that we'd share secret information with a hosting service like Heroku is by establishing a secure, private line of communication between us and the host, and transferring the secrets through that protected channel. We'll look at this more next week when we start deploying to Heroku.
 
 #### Your Turn :: Paperclip with S3
 
