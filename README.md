@@ -158,5 +158,6 @@ In the same pairs as before, convert over your Rails app to link up with S3 inst
 ## Additional References
 - [Paperclip's GitHub Page](https://github.com/thoughtbot/paperclip)
 - [Heroku's Paperclip + S3 Walkthrough](https://devcenter.heroku.com/articles/paperclip-s3)
+- [Adding Environmental Variables to Heroku (For When You Deploy)](https://devcenter.heroku.com/articles/config-vars)
 - [RubyDocs Page on Paperclip](http://www.rubydoc.info/gems/paperclip/Paperclip)
 - [RubyDocs Page on using S3 with Paperclip](http://www.rubydoc.info/gems/paperclip/Paperclip/Storage/S3)
