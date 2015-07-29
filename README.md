@@ -34,7 +34,7 @@ In this example, we'll be building a simple CRUD app for movies, and adding imag
 
 2. Make your new Rails app.
 
-  a. `rails new demo_movie_app -T --database=postgresql`
+  a. `rails new mini_movie_app -T --database=postgresql`
 
   b. `bundle install`
 
@@ -95,14 +95,14 @@ In this example, we'll be building a simple CRUD app for movies, and adding imag
 
 #### Your Turn :: Paperclip
 
-You're going to work in pairs to build an CRUD app for songs. Follow the recipe above, and do your best!
+In your groups, add Paperclip to the IMDB clone from earlier today - make it so that you can attach Posters to Movies, or Headshots to People.
 
 ### Paperclip with S3
-Our locally-hosted application is, as you've just seen, fully capable of accepting file uploads and managing them. So when we host to Heroku, that should work too, right?
+Our locally-hosted application is, as you've just seen, fully capable of accepting file uploads and managing them. So when we deploy to Heroku, that should work too, right?
 
 Wrong.
 
-Although Heroku's system will swear up and down that it can handle image upload like this, and give you signals that it's doing the right thing, _it isn't_. So when we deploy our apps, we need to find an alternative storage solution.
+As was explained in the previous lesson, Heroku provides an ephemeral filesystem, so any files that we try to create or add to Heroku while it's running will _not be added_. If we want image upload to work when we deploy our apps, we need to find an alternative storage solution.
 
 One of the more common solutions is Amazon's Simple Storage Service (S3). With only a few modifications, we can configure our app so that it's always storing things to Amazon instead of storing them locally.
 
@@ -153,7 +153,7 @@ Ready to take the leap? Let's do it!
 
 #### Your Turn :: Paperclip with S3
 
-In the same pairs as before, convert over your Rails app to link up with S3 instead of storing images on localhost. If you can get it working, trying creating a simple front-end app to plug into this new back-end!
+In your groups, go back to your IMDB clone and switch it over from local storage to using S3.
 
 ## Additional References
 - [Paperclip's GitHub Page](https://github.com/thoughtbot/paperclip)
