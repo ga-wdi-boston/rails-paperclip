@@ -86,7 +86,7 @@ In this example, we'll be building a simple CRUD app for movies, and adding imag
   end
   ```
 
-  h. Test the API with Postman/`curl` - does it work?
+  h. Test the API with Postman and/or `curl` - does it work?
   > Don't forget to set up a CORS policy so that your API is accessible from a separate front-end!
 
 3. Once you've made your Rails app and have confirmed that it's working correctly, you can move onto the next step - adding Paperclip attachments to models.
