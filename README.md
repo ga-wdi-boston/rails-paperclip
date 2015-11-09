@@ -11,9 +11,9 @@ By the end of this lesson, students should be able to:
 
 ## Prerequisites
 
-- Ruby
 - Rails MVC
 - Postgres
+- jQuery
 
 ## Paperclip
 
@@ -21,36 +21,75 @@ Paperclip is a gem that was created by a dev shop called [**thoughtbot**](https:
 
 Together, we're going to walk through the steps of how you take an ordinary Rails application and incorporate image upload. Afterwards, if there's time, we'll look at how to integrate S3 as well.
 
-### Paperclip with Local Storage
+### Paperclip with Local Filesystem Storage
 
 Like many things in Rails, incorporating Paperclip into a project involves following a recipe. Code along if you can!
 In this example, we'll be building a simple CRUD app for movies, and adding image upload in order to imbue each of these `Movie` resources with a 'poster' image.
 
-1. First, install ImageMagick from HomeBrew - Paperclip uses ImageMagick to process the images it receives.
+1. First, install ImageMagick using HomeBrew - Paperclip uses ImageMagick to process the images it receives.
 
   ```bash
     brew install ImageMagick
   ```
 
 2. Make your new Rails app.
+  > If you already have a Rails application ready, and just want to add Paperclip to it, you can skip this step.
 
   a. `rails new mini_movie_app -T --database=postgresql`
 
   b. `bundle install`
 
-  c. `rake db:create`
+  c. `bundle exec rake db:create`
 
-  d. `rails g migration CreateMovies title:string director:string year:integer`
+  d. `rails g model Movie title release_year:integer`
 
-  e. Make a model (Movie), and populate `seeds.rb`
+  e. `bundle exec rake db:migrate`
 
-  f. `rake db:migrate`
+  f. Write a Ruby script to populate the database (e.g. `scripts/populate_movies.rb`) with some data.
 
-  g. Make routes and a controller to respond to them. Leave off the `new` and `edit` controller actions for now. Don't forget to set up strong params inside the controller!
+  g. Make some routes and a controller to respond to them. Don't forget to set up strong params inside the controller!
 
-  h. Test the app - does it work? You might need to add things related to CORS.
+  ```ruby
+  # config/routes.rb
+  Rails.application.routes.draw do
+    resources :movies, only:[:index, :show, :create]
+  end
+  ```
 
-3. Once you've made your Rails app and have confirmed that it's working correctly, you can move onto the next step - adding attachments to models.
+  ```ruby
+  # app/controllers/movies_controller.rb
+  class MoviesController < ApplicationController
+
+    def index
+      render json: Movie.all
+    end
+
+    def show
+      movie = Movie.find(params[:id])
+      render json: movie
+    end
+
+    def create
+      movie = Movie.new(movie_params)
+      if movie.save
+        render json: movie
+      else
+        render json: movie.errors, status: :unprocessable_entity
+      end
+    end
+
+    private
+    def movie_params
+      params.require(:movie).permit(:title, :release_year)
+    end
+
+  end
+  ```
+
+  h. Test the API with Postman/`curl` - does it work?
+  > Don't forget to set up a CORS policy so that your API is accessible from a separate front-end!
+
+3. Once you've made your Rails app and have confirmed that it's working correctly, you can move onto the next step - adding Paperclip attachments to models.
 
   a. Add the `paperclip` gem to your Gemfile. Afterwards, run `bundle install`.
 
@@ -65,11 +104,20 @@ In this example, we'll be building a simple CRUD app for movies, and adding imag
                 :styles => { :medium => "300x300>", :thumb => "100x100>" },
                 :default_url => "/images/:style/missing.png"
     validates_attachment_content_type :poster, :content_type => /\Aimage\/.*\Z/
+
+    # By default, every file uploaded will be named 'data'.
+    # This renames the file to a timestamp, preventing name collisions.
+    # This will also fix browser caching issues for updates
+    def rename_poster
+      self.poster.instance_write :file_name, "#{Time.now.to_i.to_s}.png"
+    end
+
+    before_post_process :rename_poster
     ```
 
   c. Create a new migration, either using a generator (`rails g paperclip movie poster`) or by writing out your migration file by hand. Once your migration file is ready, run `rake db:migrate` to run your migration.
 
-  d. Create two files inside the `views` folder, `edit.html.erb` and `new.html.erb`; the contents of these files should be more or less the same. These two files will be used to generate forms, which we need in order to upload images.
+  <!-- d. Create two files inside the `views` folder, `edit.html.erb` and `new.html.erb`; the contents of these files should be more or less the same. These two files will be used to generate forms, which we need in order to upload images.
 
     ```erb
     <%= form_for @movie, :html => { :multipart => true } do |form| %>
@@ -87,17 +135,91 @@ In this example, we'll be building a simple CRUD app for movies, and adding imag
     ```
     > Be sure to replace the fields and labels to be in keeping with the properties of your model.
 
-  e. Edit your controller. Give your controller two new methods to line up with the views you've just created (edit and new); make sure that you **don't** have these actions render JSON. Then, adjust your strong params function to permit the new property (in this case, `:poster`). Finally, add a method to delete
+  e. Edit your controller. Give your controller two new methods to line up with the views you've just created (edit and new); make sure that you **don't** have these actions render JSON. Then, adjust your strong params function to permit the new property (in this case, `:poster`). Finally, add a method to delete -->
 
-  f. Once all of this is done, restart Rails and try visiting your routes.
+  d. Edit the 'strong params' function inside your controller to permit the new 'poster' property.
 
-  Once you upload an image, it will (by default) get added to a directory within the `public` directory in your Rails app. To access these images, you can either create a Rails View to show them, or (more likely, in the case of dealing with a JSON API), you can send back a link to where the file is available within the app.
+  ```ruby
+  def movie_params
+    params.require(:movie).permit(:title, :release_year, :poster)
+  end
+  ```
+
+  e. Create your front-end app. Although the Paperclip gem provides a relatively simple way to implement image upload into an app, sending an image from the client to the API is tricky - you need to make use of JavaScript's `FileReader` prototype in order to make things work. An example implementation is below (credit belongs to [Max Blaushild](https://github.com/MaxBlaushild))
+
+  ```javascript
+  // main.js
+  $(document).ready(function(){
+
+    $('#submit').on('click', function(e){
+      e.preventDefault();
+      // creates a new instance of the FileReader object prototype
+      var reader = new FileReader();
+
+      //setting a function to be executed every time the reader successfully completes a read operation
+      reader.onload = function(event){
+        // once the data url has been loaded, make the ajax request with the result set as the value to key 'poster'
+        $.ajax({
+          url: 'http://localhost:3000/movies',
+          method: 'POST',
+          data: { movie: {
+            title: $('#title').val(),
+            director: $('#director').val(),
+            poster: event.target.result
+          } }
+        }).done(function(response){
+
+        }).fail(function(response){
+          console.error('Whoops!');
+        })
+      };
+
+      // read the first file of the file input
+      $fileInput = $('#poster');
+      reader.readAsDataURL($fileInput[0].files[0]);
+
+    });
+  });
+  ```
+
+  Here is the HTML page that this JavaScript code refers to.
+
+  ```html
+  /* index.html */
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Paperclip Example Front-End</title>
+  </head>
+  <body>
+    <h1> Using Paperclip Over a JSON API </h1>
+    <form>
+      <label> Title
+        <input type="text" id="title"/>
+      </label>
+      <label> Director
+        <input type="text" id="director"/>
+      </label>
+      <label> Poster
+        <input type="file" id="poster"/>
+      </label>
+      <button id="submit">Create Movie</button>
+    </form>
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <script src="main.js"></script>
+  </body>
+  </html>
+  ```
+
+  e. Once all of this is done, restart the Rails server and try to upload an image from your front-end.
+
+  Once you upload an image, it will (by default) get added to a directory within the `public` directory in your Rails app. To give the front-end access to this image, you can send back a link to where the file is available within the app.
 
 #### Your Turn :: Paperclip
 
-In your groups, add Paperclip to the IMDB clone from earlier today - make it so that you can attach Posters to Movies, or Headshots to People.
+In your groups, add Paperclip to the IMDB clone from the second summative lesson - make it so that you can attach Posters to Movies, or Photos to People.
 
-### Paperclip with S3
+### Paperclip with S3 Storage
 Our locally-hosted application is, as you've just seen, fully capable of accepting file uploads and managing them. So when we deploy to Heroku, that should work too, right?
 
 Wrong.
@@ -122,7 +244,7 @@ Ready to take the leap? Let's do it!
   ```
 5. Create an empty `.env` file in the root of your Rails app, and add `.env` to your `.gitignore`.
 
-  > If you don't have a `.gitignore`, **you need to make one**. The `.gitignore` file is all that keeps us from commiting sensitive information to your repo for all time.
+  > If you don't have a `.gitignore`, **you need to make one**. The `.gitignore` file is all that keeps us from committing sensitive information to your repo for all time.
 
 6. Add the following things to your new `.env` file.
 
