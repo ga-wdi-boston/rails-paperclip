@@ -117,26 +117,6 @@ In this example, we'll be building a simple CRUD app for movies, and adding imag
 
   c. Create a new migration, either using a generator (`rails g paperclip movie poster`) or by writing out your migration file by hand. Once your migration file is ready, run `rake db:migrate` to run your migration.
 
-  <!-- d. Create two files inside the `views` folder, `edit.html.erb` and `new.html.erb`; the contents of these files should be more or less the same. These two files will be used to generate forms, which we need in order to upload images.
-
-    ```erb
-    <%= form_for @movie, :html => { :multipart => true } do |form| %>
-      <%= form.label :title%>
-      <%= form.text_field :title%>
-      <%= form.label :director%>
-      <%= form.text_field :director%>
-      <%= form.label :year%>
-      <%= form.text_field :year%>
-      <%= form.label 'Upload Poster'%>
-      <%= form.file_field :poster%>
-      <%= form.submit 'Update Movie' %>
-      <%= link_to 'Back', movies_path, class: 'button' %>
-    <% end %>
-    ```
-    > Be sure to replace the fields and labels to be in keeping with the properties of your model.
-
-  e. Edit your controller. Give your controller two new methods to line up with the views you've just created (edit and new); make sure that you **don't** have these actions render JSON. Then, adjust your strong params function to permit the new property (in this case, `:poster`). Finally, add a method to delete -->
-
   d. Edit the 'strong params' function inside your controller to permit the new 'poster' property.
 
   ```ruby
@@ -188,26 +168,26 @@ In this example, we'll be building a simple CRUD app for movies, and adding imag
   /* index.html */
   <!DOCTYPE html>
   <html>
-  <head>
-    <title>Paperclip Example Front-End</title>
-  </head>
-  <body>
-    <h1> Using Paperclip Over a JSON API </h1>
-    <form>
-      <label> Title
-        <input type="text" id="title"/>
-      </label>
-      <label> Director
-        <input type="text" id="director"/>
-      </label>
-      <label> Poster
-        <input type="file" id="poster"/>
-      </label>
-      <button id="submit">Create Movie</button>
-    </form>
-    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
-    <script src="main.js"></script>
-  </body>
+    <head>
+      <title>Paperclip Example Front-End</title>
+    </head>
+    <body>
+      <h1> Using Paperclip Over a JSON API </h1>
+      <form>
+        <label> Title
+          <input type="text" id="title"/>
+        </label>
+        <label> Director
+          <input type="text" id="director"/>
+        </label>
+        <label> Poster
+          <input type="file" id="poster"/>
+        </label>
+        <button id="submit">Create Movie</button>
+      </form>
+      <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+      <script src="main.js"></script>
+    </body>
   </html>
   ```
 
