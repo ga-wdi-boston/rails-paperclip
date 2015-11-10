@@ -212,7 +212,7 @@ Ready to take the leap? Let's do it!
 
 1. If you don't have one yet, sign up for an Amazon Web Services account. (Incidentally, GA has a [pretty sweet promotional deal](images/GA-alumni-perks.png) that you can use once you create an account - [click here](http://aws.amazon.com/activate/event/20gafr15/) to claim it.)
 
-2. Inside AWS, create a new IAM user, and write down (a) the AWS access key ID and (b) the AWS secret access key. You'll need this information later, and if you don't record it now, you'll have to re-generate it. Once they's done, create a Resource Group with admin privileges, and add the new user to it.
+2. Inside AWS, create a new IAM user, and write down (a) the AWS access key ID and (b) the AWS secret access key. You'll need this information later, and if you don't record it now, you'll have to re-generate it. Once they's done, create a Resource Group with **non-admin** privileges (see [this repo](https://github.com/ga-wdi-boston/js-express-multer) for more details), and add the new user to it.
 
 3. Then, create a new 'Bucket', and write down the name of that bucket.
 
